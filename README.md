@@ -20,9 +20,11 @@ To run the project simply traverse to the directory with the project in it and t
 Since the algorithm is relatively slow I simply ran it for 10,000 and 100,000 iterations and there is a sharp increase in accuracy. It is not far fetched to be able to increase >0.9 r squared value with more iterations.
 
 10,000 iterations:
+
 ![alt text](https://github.com/apurva-rai/Neural_network/blob/main/images/run1.png?raw=true)
 
 100,000 iterations:
+
 ![alt text](https://github.com/apurva-rai/Neural_network/blob/main/images/run2.png?raw=true)
 
 #Future work
