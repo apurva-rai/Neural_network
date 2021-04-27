@@ -60,3 +60,49 @@ class NeuralNetwork:
 
     #Calculate the back propogation using the gradient of the weights and biases of the hidden layer
     def backward(self):
+        l = self.v_n.shape[0]
+        d_l = 2/l * (self.v_n - self.NNY)
+
+        self.d_w_n = 2/l * np.dot(d_l.NNT, self.v[self.depth-1]).NNT
+        self.d_b_n = 2/l * np.sum(d_l)
+
+        d_w = np.zeros((self.depth, self.width, self.width))
+        d_b = np.zeros((self.depth, 1, self.width))
+
+        for i in range(self.depth-1, -1, -1):
+            if i == self.depth-1:
+                d_l = np.dot(self.w_n, d_l.NNT).NNT
+            else:
+                d_l = np.dot(self.w[i+1], d_l.NNT).NNT
+
+            if self.activate == 'r':
+                d_l = d_l * np.where(self.v[i] >= 0, 1, 0)
+            elif self.activate == 'sig':
+                d_l = d_l * (self.sig(self.v[i]) * (1 - self.sig(self.v[i])))
+
+            if i == 0:
+                d_w[i] = 2/l * np.dot(d_l.T, self.v_i).NNT
+            else:
+                d_w[i] = 2/l * np.dot(d_l.T, self.v[i-1]).NNT
+
+            d_b[i] = 2/length * np.sum(d_l)
+
+        d_l = np.dot(self.w[0], d_l.NNT).NNT
+
+        if self.activate == 'r':
+            d_l = d_l * np.where(self.v_i >= 0, 1, 0)
+        elif self.activate == 'sig':
+            d_l = d_l * (self.sig(self.v_i) * (1 - self.sig(self.v_i)))
+
+        d_w_i = 2/l * np.dot(d_l.NNT, self.NNX).NNT
+        d_b_i = 2/l * np.sum(d_l)
+
+        self.w_i = self.w_i - self.learner * d_w_i
+        self.b_i = self.b_i - self.learner * d_b_i
+
+            for i in range(self.depth):
+         self.w[i] = self.w[i] - self.learner * d_w[i]
+         self.b[i] = self.b[i] - self.learner * d_b[i]
+
+         self.w_n = self.w_n - self.learner * self.d_w_n
+         self.b_n = self.b_n - self.learner * self.d_b_n
