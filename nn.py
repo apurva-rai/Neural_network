@@ -32,7 +32,7 @@ class NeuralNetwork:
         self.b_n = np.random.randn(1)
 
     def rSquare(self, NNY):
-        self.score = 1 - (np.sum(np.square(self.finalValues-NNY))/np.sum(np.square(NNY-np.mean(NNY))))
+        self.score = 1 - (np.sum(np.square(self.v_n-NNY))/np.sum(np.square(NNY-np.mean(NNY))))
 
     #Calculates intermediate values using the initialized weights and biases of the hidden layer
     def forward(self, NNX):
@@ -63,7 +63,7 @@ class NeuralNetwork:
         l = self.v_n.shape[0]
         d_l = 2/l * (self.v_n - self.NNY)
 
-        self.d_w_n = 2/l * np.dot(d_l.NNT, self.v[self.depth-1]).NNT
+        self.d_w_n = 2/l * np.dot(d_l.T, self.v[self.depth-1]).T
         self.d_b_n = 2/l * np.sum(d_l)
 
         d_w = np.zeros((self.depth, self.width, self.width))
@@ -71,9 +71,9 @@ class NeuralNetwork:
 
         for i in range(self.depth-1, -1, -1):
             if i == self.depth-1:
-                d_l = np.dot(self.w_n, d_l.NNT).NNT
+                d_l = np.dot(self.w_n, d_l.T).T
             else:
-                d_l = np.dot(self.w[i+1], d_l.NNT).NNT
+                d_l = np.dot(self.w[i+1], d_l.T).T
 
             if self.activate == 'r':
                 d_l = d_l * np.where(self.v[i] >= 0, 1, 0)
@@ -81,31 +81,31 @@ class NeuralNetwork:
                 d_l = d_l * (self.sig(self.v[i]) * (1 - self.sig(self.v[i])))
 
             if i == 0:
-                d_w[i] = 2/l * np.dot(d_l.T, self.v_i).NNT
+                d_w[i] = 2/l * np.dot(d_l.T, self.v_i).T
             else:
-                d_w[i] = 2/l * np.dot(d_l.T, self.v[i-1]).NNT
+                d_w[i] = 2/l * np.dot(d_l.T, self.v[i-1]).T
 
-            d_b[i] = 2/length * np.sum(d_l)
+            d_b[i] = 2/l * np.sum(d_l)
 
-        d_l = np.dot(self.w[0], d_l.NNT).NNT
+        d_l = np.dot(self.w[0], d_l.T).T
 
         if self.activate == 'r':
             d_l = d_l * np.where(self.v_i >= 0, 1, 0)
         elif self.activate == 'sig':
             d_l = d_l * (self.sig(self.v_i) * (1 - self.sig(self.v_i)))
 
-        d_w_i = 2/l * np.dot(d_l.NNT, self.NNX).NNT
+        d_w_i = 2/l * np.dot(d_l.T, self.NNX).T
         d_b_i = 2/l * np.sum(d_l)
 
         self.w_i = self.w_i - self.rate * d_w_i
         self.b_i = self.b_i - self.rate * d_b_i
 
-            for i in range(self.depth):
-         self.w[i] = self.w[i] - self.rate * d_w[i]
-         self.b[i] = self.b[i] - self.rate * d_b[i]
+        for i in range(self.depth):
+            self.w[i] = self.w[i] - self.rate * d_w[i]
+            self.b[i] = self.b[i] - self.rate * d_b[i]
 
-         self.w_n = self.w_n - self.rate * self.d_w_n
-         self.b_n = self.b_n - self.rate * self.d_b_n
+        self.w_n = self.w_n - self.rate * self.d_w_n
+        self.b_n = self.b_n - self.rate * self.d_b_n
 
     def train(self, NNX):
         self.forward(NNX)
@@ -132,7 +132,7 @@ class NeuralNetwork:
 
         return self.score
 
-    def trainNN(self,NNX,NNY, k=20):
+    def trainNN(self,NNX,NNY, k=15):
         np.random.shuffle(NNX)
         np.random.shuffle(NNY)
 
@@ -142,20 +142,21 @@ class NeuralNetwork:
 
         for i in range(k):
             if i == 0:
-                trainX = np.concatanate(X[i+1:])
-                trainY = np.concatanate(Y[i+1:])
-            elif i == k+1:
-                trainX = np.concatanate(X[i:])
-                trainY = np.concatanate(Y[i:])
+                trainX = np.concatenate(X[i+1:])
+                trainY = np.concatenate(Y[i+1:])
+            elif i == k-1:
+                trainX = np.concatenate(X[:i])
+                trainY = np.concatenate(Y[:i])
             else:
-                trainX = np.vstack(np.concatanate(X[:i]),np.concatanate(X[i+1:]))
-                trainY = np.vstack(np.concatanate(Y[:i]),np.concatanate(Y[i+1:]))
+                trainX = np.vstack((np.concatenate(X[:i]), np.concatenate(X[i+1:])))
+                trainY = np.vstack((np.concatenate(Y[:i]), np.concatenate(Y[i+1:])))
 
             testX = X[i]
             testY = Y[i]
             self.initializeNN(trainX, trainY)
 
-            trainedY = self.train(testY)
+            trainedY = self.train(testX)
+            self.rSquare(testY)
             currentScoreList.append(self.score)
 
-        return np.mean(scores)    
+        return np.mean(currentScoreList)
