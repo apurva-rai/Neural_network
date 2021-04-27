@@ -1,4 +1,4 @@
-# Neural_network
+# Regressive Neural Network
 Neural network implementation from scratch following a regression model
 
 ## Datasets Examined
