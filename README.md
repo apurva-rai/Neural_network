@@ -5,7 +5,7 @@ Neural network implementation from scratch following a regression model
 Acheive relatively successful classification
 Wheat Seeds Dataset - https://archive.ics.uci.edu/ml/datasets/seeds
 
-Boston Housing Dataset - https://www.kaggle.com/puxama/bostoncsv
+Bike Sharing Dataset - https://archive.ics.uci.edu/ml/datasets/bike+sharing+dataset
 
 ## The Algorithm
 
