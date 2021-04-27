@@ -97,12 +97,65 @@ class NeuralNetwork:
         d_w_i = 2/l * np.dot(d_l.NNT, self.NNX).NNT
         d_b_i = 2/l * np.sum(d_l)
 
-        self.w_i = self.w_i - self.learner * d_w_i
-        self.b_i = self.b_i - self.learner * d_b_i
+        self.w_i = self.w_i - self.rate * d_w_i
+        self.b_i = self.b_i - self.rate * d_b_i
 
             for i in range(self.depth):
-         self.w[i] = self.w[i] - self.learner * d_w[i]
-         self.b[i] = self.b[i] - self.learner * d_b[i]
+         self.w[i] = self.w[i] - self.rate * d_w[i]
+         self.b[i] = self.b[i] - self.rate * d_b[i]
 
-         self.w_n = self.w_n - self.learner * self.d_w_n
-         self.b_n = self.b_n - self.learner * self.d_b_n
+         self.w_n = self.w_n - self.rate * self.d_w_n
+         self.b_n = self.b_n - self.rate * self.d_b_n
+
+    def train(self, NNX):
+        self.forward(NNX)
+        return self.v_n
+
+    def initializeNN(self, NNX, NNY):
+        self.NNX = NNX
+        self.NNY = NNY
+
+        self.initalizeWeight(NNX)
+
+        for i in range(self.iter):
+            self.forward(self.NNX)
+            self.cost = 1 / self.v_n.shape[0] * np.sum(np.square(self.v_n - self.NNY))
+
+            if np.isnan(self.cost):
+                self.initalizeWeight(NNX)
+                self.rate /= 2
+                continue
+
+            self.backward()
+
+        self.rSquare(self.NNY)
+
+        return self.score
+
+    def trainNN(self,NNX,NNY, k=20):
+        np.random.shuffle(NNX)
+        np.random.shuffle(NNY)
+
+        X = np.array_split(NNX,k)
+        Y = np.array_split(NNY,k)
+        currentScoreList = []
+
+        for i in range(k):
+            if i == 0:
+                trainX = np.concatanate(X[i+1:])
+                trainY = np.concatanate(Y[i+1:])
+            elif i == k+1:
+                trainX = np.concatanate(X[i:])
+                trainY = np.concatanate(Y[i:])
+            else:
+                trainX = np.vstack(np.concatanate(X[:i]),np.concatanate(X[i+1:]))
+                trainY = np.vstack(np.concatanate(Y[:i]),np.concatanate(Y[i+1:]))
+
+            testX = X[i]
+            testY = Y[i]
+            self.initializeNN(trainX, trainY)
+
+            trainedY = self.train(testY)
+            currentScoreList.append(self.score)
+
+        return np.mean(scores)    
