@@ -30,3 +30,20 @@ Since the algorithm is relatively slow I simply ran it for 10,000 and 100,000 it
 ## Future work
 
 I would want to optimize many of the processes in this implementation along with the libraries that I use. I would like to use jit Numba for certain tasks that are called often.
+
+## Sources
+
+Here are the main sources I used to implement and learn about NN:
+
+
+https://machinelearningmastery.com/implement-backpropagation-algorithm-scratch-python/
+
+https://towardsdatascience.com/build-your-own-neural-network-from-scratch-with-python-dbe0282bd9e3
+
+https://towardsdatascience.com/a-neural-network-from-scratch-c09fd2dea45d
+
+https://medium.com/swlh/neural-network-from-scratch-in-python-fcd6faef9f35
+
+https://towardsdatascience.com/weight-initialization-techniques-in-neural-networks-26c649eb3b78
+
+
